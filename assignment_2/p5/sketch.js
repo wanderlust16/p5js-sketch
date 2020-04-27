@@ -12,11 +12,11 @@ let movingBall_x = 410;
 
 function draw() {
   // 배경
-  background(227, 255, 255);
-  fill(181, 255, 255);
+  background(255, 255, 194);
+  fill(255, 255, 145);
   noStroke();
   quad(80, 320, 600, 320, 600, 420, 20, 420);
-  fill(136, 252, 252);
+  fill(255, 255, 92);
   rect(20, 420, 580, 30);
 
   // 로또 통
@@ -38,7 +38,7 @@ function draw() {
   fill(233, 209, 255);
   stroke(233, 209, 255);
   circle(400, 220, 180);
-  rect(385, 52, 35, 265, 5);
+  rect(385, 50, 35, 265, 5);
 
   // 굴러 내려오는 공
   if(choice) {
@@ -65,18 +65,14 @@ function draw() {
       noStroke();
       circle(movingBall_x, 379, 30);
       if(movingBall_x === 190) {
-        // noLoop();
         choice = true;
         circle(movingBall_x, 379, 30); // 그 자리에 고정
         showBall = true;
-        // fill(0);
-        // circle(150, 225, 100);
         noLoop();
       }
     }
   }
 
-  // fill(255);
   noStroke();
 
   // 노란 공
