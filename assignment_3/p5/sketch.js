@@ -1,11 +1,10 @@
 let fontBold, fontExtraBold;
-let firstDice = 4;
-let secondDice = 3;
+let goStat = 'off';
 let rollDice = false;
-let goColor = 'green';
-
-let go_X;
-let go_Y;
+let concertStat = 'off';
+let startConcert = false;
+let airplaneStat = 'off';
+let moveAirplane = false;
 
 function preload(){
   fontBold = loadFont('assets/Kanit-Bold.ttf');
@@ -74,48 +73,6 @@ function draw() {
   for(let i=0; i<10; i++) {
     line(110+(i*20), 30+(i*32), 160+(i*67), 0);
   }
-  // dices
-  if(rollDice) {
-
-  } else {
-    drawingContext.shadowOffsetX = 3;
-    drawingContext.shadowOffsetY = 3;
-    drawingContext.shadowBlur = 10;
-    drawingContext.shadowColor = 'black';
-    push();
-    fill(250);
-    translate(280, 100);
-    rotate(-10);
-    rect(0, 0, 80, 80, 10);
-    drawingContext.shadowOffsetX = 0;
-    drawingContext.shadowOffsetY = 0;
-    drawingContext.shadowBlur = 0;
-    fill(27, 165, 98); // green
-    circle(-18, -18, 15);
-    circle(18, -18, 15);
-    circle(18, 18, 15);
-    circle(-18, 18, 15);
-    pop();
-    push();
-    fill(250);
-    translate(420, 140);
-    rotate(-40);
-    rect(0, 0, 80, 80, 10);
-    drawingContext.shadowOffsetX = 0;
-    drawingContext.shadowOffsetY = 0;
-    drawingContext.shadowBlur = 0;
-    fill(27, 165, 98); // green
-    circle(-18, -18, 15);
-    circle(0, 0, 15);
-    circle(18, 18, 15);
-    pop();
-  }
-
-
-  // remove shadow
-  drawingContext.shadowOffsetX = 0;
-  drawingContext.shadowOffsetY = 0;
-  drawingContext.shadowBlur = 0;
 
   // each board cell
   stroke(117, 77, 25);
@@ -126,8 +83,14 @@ function draw() {
   rotate(-34);
   rect(0, 0, 200, 170);
   translate(0, 165);
+  if(airplaneStat === 'on') {
+    stroke(137, 255, 69);
+    strokeWeight(8);
+  }
   rect(0, 0, 200, 160);
 
+  stroke(117, 77, 25);
+  strokeWeight(2);
   fill(250, 108, 42); // red
   translate(0, 165);
   rect(0, 0, 200, 170);
@@ -137,13 +100,13 @@ function draw() {
   rect(0, 0, 200, 200);
     push();
     translate(0, -10);
-    goColor === 'green' ? fill(250, 108, 42) : fill(27, 165, 98); // red & green
+    goStat === 'off' ? fill(250, 108, 42) : fill(27, 165, 98); // red & green
     circle(0, 0, 130);
-    goColor === 'green' ? fill(237, 233, 213) : fill(255, 250, 107); // beige & yello
+    goStat === 'off' ? fill(237, 233, 213) : fill(255, 250, 107); // beige & yello
     circle(0, 0, 110);
     translate(-120, 0);
 
-    goColor === 'green' ? fill(27, 165, 98) : fill(250, 108, 42); // green or red
+    goStat === 'off' ? fill(27, 165, 98) : fill(250, 108, 42); // green or red
     textSize(50);
     textFont(fontExtraBold);
     text('GO!', 80, 20);
@@ -171,13 +134,25 @@ function draw() {
     arc(0, 20, 125, 125, 50, 130);
     pop()
   fill(237, 233, 213); // beige
+  if(concertStat === 'on') {
+    stroke(137, 255, 69);
+    strokeWeight(8);
+  }
   translate(170, 0);
   rect(0, 0, 170, 200);
     push();
-    fill(255, 250, 107); // yellow
-    triangle(0, -90, -60, 60, 60, 60);
-    fill(250, 108, 42); // red
-    ellipse(0, 60, 120, 30);
+    if(startConcert) {
+      fill(random(255), 255, random(255));
+      triangle(0, -90, -60, 60, 60, 60);
+      fill(255, random(255), random(255));
+      ellipse(0, 60, 120, 30);
+    } else {
+      fill(255, 250, 107); // yellow
+      triangle(0, -90, -60, 60, 60, 60);
+      fill(250, 108, 42); // red
+      ellipse(0, 60, 120, 30);
+    }
+
     pop();
   pop();
   // board cell deco 1
@@ -187,28 +162,59 @@ function draw() {
   rotate(-34);
   rect(0, 0, 45, 170);
   translate(0, 166);
+  if(airplaneStat === 'on') {
+    stroke(137, 255, 69);
+    strokeWeight(8);
+  };
   rect(0, 0, 45, 160);
+  stroke(117, 77, 25);
+  strokeWeight(2);
     // airplane
+    let speed = frameCount;
     push();
-    fill(27, 165, 98); // green
-    quad(-80, -30, -70, -35, -40, 0, -65, 0);
-    quad(-40, -50, -25, -55, 40, -10, 0, -5);
-    quad(-10, 8, 15, 5, -5, 60, -20, 60);
-    fill(250); // white
-    rotate(-10);
-    ellipse(55, -8, 50, 33);
-    rotate(10);
-    quad(-70, -5, 50, -35, 50, 0, -70, 15);
-    noStroke();
-    quad(-40, -3, 52, -34, 52, -1, -40, 10);
-    fill(167, 214, 213); // sky blue
-    stroke(117, 77, 25);
-    for(let i=0; i<6; i++) {
-      circle(-35+(i*12), -5-(i*3), 8);
+    if(moveAirplane) {
+      fill(27, 165, 98); // green
+      quad(-80+speed, -30, -70+speed, -35, -40+speed, 0, -65+speed, 0);
+      quad(-40+speed, -50, -25+speed, -55, 40+speed, -10, 0+speed, -5);
+      quad(-10+speed, 8, 15+speed, 5, -5+speed, 60, -20+speed, 60);
+      quad(-60+speed, 14, -40+speed, 10, -54+speed, 50, -70+speed, 54);
+      fill(250); // white
+      rotate(-10);
+      ellipse(55+speed, -8+(speed/6), 50, 33);
+      rotate(10);
+      quad(-70+speed, -5, 50+speed, -35, 50+speed, 0, -70+speed, 15);
+      noStroke();
+      quad(-40+speed, -3, 52+speed, -34, 52+speed, -1, -40+speed, 10);
+      fill(167, 214, 213); // sky blue
+      stroke(117, 77, 25);
+      for(let i=0; i<6; i++) {
+        circle(-35+(i*12)+speed, -5-(i*3), 8);
+      }
+      rotate(15);
+      ellipse(52+speed, -44-(speed/4), 26, 10);
+    } else {
+      fill(27, 165, 98); // green
+      quad(-80, -30, -70, -35, -40, 0, -65, 0);
+      quad(-40, -50, -25, -55, 40, -10, 0, -5);
+      quad(-10, 8, 15, 5, -5, 60, -20, 60);
+      quad(-60, 14, -40, 10, -54, 50, -70, 54);
+      fill(250); // white
+      rotate(-10);
+      ellipse(55, -8, 50, 33);
+      rotate(10);
+      quad(-70, -5, 50, -35, 50, 0, -70, 15);
+      noStroke();
+      quad(-40, -3, 52, -34, 52, -1, -40, 10);
+      fill(167, 214, 213); // sky blue
+      stroke(117, 77, 25);
+      for(let i=0; i<6; i++) {
+        circle(-35+(i*12), -5-(i*3), 8);
+      }
+      rotate(15);
+      ellipse(52, -44, 26, 10);
     }
-    rotate(15);
-    ellipse(52, -44, 26, 10);
     pop();
+
     // clouds
     push();
     fill(237, 233, 213); // beige
@@ -259,10 +265,20 @@ function draw() {
   textSize(30);
   textFont(fontBold);
   text('JI EUN', -45, 10);
+  if(concertStat === 'on') {
+    stroke(137, 255, 69);
+    strokeWeight(8);
+  }
   fill(250, 108, 42); // red
   translate(170, 0);
   rect(0, 0, 170, 50);
-  fill(117, 77, 25);
+  if(startConcert) {
+    fill(random(100),random(100),random(100));
+  } else {
+    fill(117, 77, 25);
+  }
+  stroke(117, 77, 25);
+  strokeWeight(2);
   textSize(18);
   textFont(fontBold);
   text('CONCERT', -40, 55);
@@ -272,16 +288,95 @@ function draw() {
   rect(0, 0, 170, 50);
   pop();
 
-  if(205 <= mouseX && mouseX <= 335 && 365 <= mouseY && mouseY <= 495) {
-    goColor = 'red';
+  // dices
+  drawingContext.shadowOffsetX = 3;
+  drawingContext.shadowOffsetY = 3;
+  drawingContext.shadowBlur = 10;
+  drawingContext.shadowColor = 'black';
+  push();
+  fill(250);
+  translate(280, 100);
+  if(rollDice) {
+    rotate(-10+(frameCount*2));
   } else {
-    goColor = 'green';
+    rotate(-10);
+  }
+  rect(0, 0, 80, 80, 10);
+
+  drawingContext.shadowOffsetX = 0;
+  drawingContext.shadowOffsetY = 0;
+  drawingContext.shadowBlur = 0;
+  fill(27, 165, 98); // green
+  circle(-18, -18, 15);
+  circle(18, -18, 15);
+  circle(18, 18, 15);
+  circle(-18, 18, 15);
+  pop();
+  push();
+  fill(250);
+  translate(420, 140);
+  if(rollDice) {
+    rotate(-40-(frameCount*2));
+  } else {
+    rotate(-40);
+  }
+  rect(0, 0, 80, 80, 10);
+  drawingContext.shadowOffsetX = 0;
+  drawingContext.shadowOffsetY = 0;
+  drawingContext.shadowBlur = 0;
+  fill(27, 165, 98); // green
+  circle(-18, -18, 15);
+  circle(0, 0, 15);
+  circle(18, 18, 15);
+  pop();
+
+  // remove shadow
+  drawingContext.shadowOffsetX = 0;
+  drawingContext.shadowOffsetY = 0;
+  drawingContext.shadowBlur = 0;
+
+  if(205 <= mouseX && mouseX <= 335 && 365 <= mouseY && mouseY <= 495) {
+    goStat = 'on';
+  } else {
+    goStat = 'off';
+  }
+
+  let d2 = int(dist(565, 245, mouseX, mouseY));
+  if(d2 < 120) {
+    concertStat = 'on';
+  } else {
+    concertStat = 'off';
+  }
+
+  let d3 = int(dist(80, 150, mouseX, mouseY));
+  if(d3 < 120) {
+    airplaneStat = 'on';
+  } else {
+    airplaneStat = 'off';
   }
 }
 
 function mousePressed() {
-  let d = int(dist(270, 430, mouseX, mouseY));
-  if(d < 65) {
+  let d1 = int(dist(270, 430, mouseX, mouseY));
+  if(d1 < 65) {
     rollDice = !rollDice;
   }
+  let d2 = int(dist(565, 245, mouseX, mouseY));
+  if(d2 < 120) {
+    startConcert = !startConcert;
+  }
+  let d3 = int(dist(80, 150, mouseX, mouseY));
+  if(d3 < 120) {
+    moveAirplane = !moveAirplane;
+    frameCount > 0 ? frameCount = 0 : frameCount;
+  }
+}
+
+function keyPressed() {
+  goStat = 'off';
+  rollDice = false;
+  concertStat = 'off';
+  startConcert = false;
+  airplaneStat = 'off';
+  moveAirplane = false;
 }
